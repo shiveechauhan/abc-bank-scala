@@ -3,8 +3,27 @@ package com.abc
 import scala.collection.mutable.ListBuffer
 
 class Customer(val name: String, var accounts: ListBuffer[Account] = ListBuffer()) {
+  
+  // Function to check if a particular type of account exists
+  private def accountExist(var accType: Int): Boolean ={ 
+    val flag: Boolean = false
+      for(a <- accounts){
+        if(a.accountType == accType)
+           flag  = flag || true
+      }
+      return flag
+    }
+  
+// Since the problem statetemt does not specify the limit on number of accounts of the same type a customer can open, an easier solution
+// to solve the #1 will be to limit the no. of accounts to 1 of each type for each customer. The test case has also been changed to
+// reflect this constraint. However, in a different aproach, we can introduce the concept of account IDs and set a counter to increment
+// the account ID as a new account of the same type is opened.
 
   def openAccount(account: Account): Customer = {
+      if(accountExist(account.accountType))
+        {
+          throw new IllegalArgumentException("This account type already exist. Please provide a new Account Type")
+        }
     accounts += account
     this
   }
@@ -50,5 +69,26 @@ class Customer(val name: String, var accounts: ListBuffer[Account] = ListBuffer(
     }
 
   private def toDollars(number: Double): String = f"$$$number%.2f"
+  
+   def transferAmount(amount: Double,val fromAccountType: Int,val toAccountType: Int ) {
+    if (fromAccountType == toAccountType)
+    {
+      throw new IllegalArgumentException("Please provide two seperate account types")
+    }
+    else
+    {
+          if(!accountExist(fromAccountType) || !accountExist(toAccountType))
+          {
+            throw new IllegalArgumentException("One of the accounts does not exist")
+          }
+          else
+          {
+            val accountFrom: Account = new Account(fromAccountType)
+                accountFrom.withdraw(amount)
+            val accountTo: Account = new Account(toAccountType)
+            accountTo.deposit(amount)
+          }
+    } 
+  }
 }
 
